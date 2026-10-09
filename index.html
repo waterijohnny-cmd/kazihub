@@ -1,3 +1,5 @@
+const SUPABASE_URL = "..."
+const SUPABASE_KEY = "..."
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,11 +24,14 @@ header{position:sticky;top:0;z-index:20;background:var(--ink);color:#fff}
 .nav{height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px}
 .logo{font:700 26px Poppins,sans-serif;letter-spacing:-.5px;text-decoration:none;color:#fff}
 .logo b{color:var(--y)}
+.nav-right{display:flex;align-items:center;gap:14px}
 .links{display:flex;align-items:center;gap:24px}
 .links a{text-decoration:none;font-size:14px;font-weight:500;color:#e5e7eb}
 .links a:hover{color:var(--y)}
 .links .cta{background:var(--y);color:var(--ink);padding:9px 18px;border-radius:99px;font-weight:700}
 .links .cta:hover{background:#ffd633;color:var(--ink)}
+.menu-btn{background:none;border:1px solid #ffffff40;color:#fff;width:42px;height:42px;border-radius:12px;font-size:20px}
+.menu-btn:hover{border-color:var(--y)}
 .hero{background:var(--ysoft);padding:56px 0 64px}
 .hgrid{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center}
 h1{font-size:clamp(32px,5vw,54px);font-weight:700;letter-spacing:-1.5px}
@@ -131,8 +136,36 @@ footer a.logo{display:inline-block;color:#fff;margin:0 0 8px}
 .poster img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top}
 .pe{position:absolute;right:14px;top:8px;font-size:60px}
 .pco{position:relative;font:600 13px Poppins,sans-serif;background:#00000066;padding:4px 12px;border-radius:99px}
+.overlay{position:fixed;inset:0;background:#000a;opacity:0;pointer-events:none;transition:opacity .25s;z-index:40}
+.overlay.on{opacity:1;pointer-events:auto}
+.side{position:fixed;top:0;right:0;height:100%;width:min(340px,86vw);background:#fff;z-index:50;transform:translateX(100%);transition:transform .28s;padding:20px;overflow-y:auto}
+.side.on{transform:none}
+.side-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;font-size:18px}
+.side-head button,.x{border:0;background:var(--bg);width:36px;height:36px;border-radius:50%;font-size:16px}
+.acct{background:var(--ysoft);border-radius:16px;padding:16px;margin-bottom:16px}
+.acct p{margin:0 0 12px;font-size:14px;color:#4b5563;word-break:break-word}
+.row2{display:flex;gap:8px}
+.btn{border:0;border-radius:99px;padding:12px 18px;font-weight:700;font-size:14px;background:var(--ink);color:#fff}
+.btn.y{background:var(--y);color:var(--ink)}
+.btn.line{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn:disabled{opacity:.6}
+.side nav a,.side nav button{display:block;width:100%;text-align:left;padding:14px 8px;border:0;border-bottom:1px solid var(--line);background:none;text-decoration:none;font-size:16px;font-weight:500}
+.modal{position:fixed;inset:0;background:#000a;display:none;place-items:center;z-index:60;padding:16px}
+.modal.on{display:grid}
+.mbox{background:#fff;border-radius:22px;padding:24px;width:min(400px,100%);position:relative;max-height:92vh;overflow:auto}
+.mbox h3{font-size:22px;padding-right:40px}
+.mbox .x{position:absolute;right:14px;top:14px}
+.tabs{display:flex;background:var(--bg);border-radius:99px;padding:4px;margin:16px 0 4px}
+.tabs button{flex:1;border:0;background:none;padding:10px;border-radius:99px;font-weight:700}
+.tabs button.on{background:var(--ink);color:#fff}
+.mbox label{display:block;font-size:13px;font-weight:700;margin:14px 0 6px}
+.mbox input{width:100%;padding:13px;border:1px solid var(--line);border-radius:12px}
+.msg{font-size:13px;margin:12px 0 0;min-height:18px}
+.msg.err{color:#dc2626}.msg.ok{color:#15803d}
+.mbox .btn{width:100%;margin-top:14px}
 @media(max-width:820px){
  .links a:not(.cta){display:none}
+ .links{gap:0}
  .hgrid,.promos,.tips{grid-template-columns:1fr}
  .hero{padding:40px 0 48px}
  .search{grid-template-columns:1fr}
@@ -154,14 +187,21 @@ footer a.logo{display:inline-block;color:#fff;margin:0 0 8px}
 <header>
  <div class="wrap nav">
   <a class="logo" href="#">Kazi<b>Hub</b></a>
-  <nav class="links">
-   <a href="#jobs">Jobs</a>
-   <a href="#categories">Categories</a>
-   <a href="#portals">Job portals</a>
-   <a href="#jobs" class="cta">Browse jobs</a>
-  </nav>
+  <div class="nav-right">
+   <nav class="links">
+    <a href="#jobs">Jobs</a>
+    <a href="#categories">Categories</a>
+    <a href="#portals">Job portals</a>
+    <a href="#jobs" class="cta">Browse jobs</a>
+   </nav>
+   <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
+  </div>
  </div>
 </header>
+
+<div class="overlay" id="overlay"></div>
+<aside class="side" id="side" aria-label="Menu"></aside>
+<div class="modal" id="modal"></div>
 
 <section class="hero">
  <div class="wrap hgrid">
@@ -389,11 +429,10 @@ function renderPosters() {
   setInterval(() => { if (!paused) go((cur + 1) % posters.length); }, 5000);
 }
 
-// ===== Supabase connection =====
+// ===== Supabase jobs =====
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const pretty = d => d ? (+d.slice(8,10)) + " " + MONTHS[+d.slice(5,7) - 1] + " " + d.slice(0,4) : "";
 
-// Turns one database row into the shape the page uses.
 const mapJob = r => ({
  title: r.title,
  company: r.company,
@@ -532,6 +571,145 @@ async function loadJobs() {
  renderJobs();
 }
 loadJobs();
+
+// ===== Accounts and sidebar =====
+const AUTH = SUPABASE_URL + "/auth/v1";
+let session = null, authMode = "login";
+try { session = JSON.parse(localStorage.getItem("kh_session") || "null"); } catch(e) {}
+
+function saveSession(s) {
+ if (s && !s.expires_at && s.expires_in) s.expires_at = Math.floor(Date.now()/1000) + s.expires_in;
+ session = s;
+ try { s ? localStorage.setItem("kh_session", JSON.stringify(s)) : localStorage.removeItem("kh_session"); } catch(e) {}
+}
+
+async function authCall(path, body, token) {
+ const headers = { "Content-Type": "application/json", apikey: SUPABASE_KEY };
+ if (token) headers.Authorization = "Bearer " + token;
+ const res = await fetch(AUTH + path, { method: "POST", headers, body: JSON.stringify(body || {}) });
+ const data = await res.json().catch(() => ({}));
+ if (!res.ok) throw new Error(data.msg || data.error_description || data.message || "Something went wrong. Try again.");
+ return data;
+}
+
+const overlay = $("overlay"), side = $("side"), modal = $("modal");
+const openSide = () => { paintSidebar(); side.classList.add("on"); overlay.classList.add("on"); };
+const closeSide = () => { side.classList.remove("on"); overlay.classList.remove("on"); };
+const closeModal = () => modal.classList.remove("on");
+$("menuBtn").onclick = openSide;
+overlay.onclick = closeSide;
+modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") { closeSide(); closeModal(); } });
+
+function paintSidebar() {
+ side.innerHTML = "";
+ const head = el("div","side-head");
+ const x = el("button",null,"✕");
+ x.setAttribute("aria-label","Close menu");
+ x.onclick = closeSide;
+ head.append(el("strong",null,"Menu"), x);
+
+ const acct = el("div","acct");
+ if (session && session.user) {
+  acct.append(el("p",null,"Signed in as " + session.user.email));
+  const out = el("button","btn line","Log out");
+  out.onclick = logout;
+  acct.appendChild(out);
+ } else {
+  acct.append(el("p",null,"Create a free account to save your progress and get job alerts."));
+  const r = el("div","row2");
+  const a = el("button","btn y","Sign up");
+  a.onclick = () => openModal("signup");
+  const b = el("button","btn","Log in");
+  b.onclick = () => openModal("login");
+  r.append(a, b);
+  acct.appendChild(r);
+ }
+
+ const menu = el("nav");
+ [["Browse jobs","#jobs"],["Categories","#categories"],["Job portals","#portals"],["Career help","#resources"]].forEach(([t,h]) => {
+  const a = el("a",null,t);
+  a.href = h;
+  a.onclick = closeSide;
+  menu.appendChild(a);
+ });
+ const sv = el("button",null,"♥ My saved jobs");
+ sv.onclick = () => { closeSide(); setCategory("__saved"); $("jobs").scrollIntoView({behavior:"smooth"}); };
+ menu.appendChild(sv);
+ side.append(head, acct, menu);
+}
+
+function openModal(mode) {
+ authMode = mode;
+ closeSide();
+ paintModal();
+ modal.classList.add("on");
+}
+
+function paintModal(msg, kind) {
+ const keep = $("authEmail");
+ const keepEmail = keep ? keep.value : "";
+ modal.innerHTML = "";
+ const login = authMode === "login";
+ const box = el("div","mbox");
+ const x = el("button","x","✕");
+ x.setAttribute("aria-label","Close");
+ x.onclick = closeModal;
+
+ const tabs = el("div","tabs");
+ [["login","Log in"],["signup","Sign up"]].forEach(([m,t]) => {
+  const b = el("button", m === authMode ? "on" : null, t);
+  b.onclick = () => { authMode = m; paintModal(); };
+  tabs.appendChild(b);
+ });
+
+ const email = el("input");
+ email.id = "authEmail"; email.type = "email"; email.placeholder = "you@example.com";
+ email.autocomplete = "email"; email.value = keepEmail;
+ const pass = el("input");
+ pass.type = "password"; pass.placeholder = "At least 6 characters";
+ pass.autocomplete = login ? "current-password" : "new-password";
+ const m = el("p","msg" + (kind ? " " + kind : ""), msg || "");
+ const btn = el("button","btn", login ? "Log in" : "Create account");
+
+ btn.onclick = async () => {
+  const e = email.value.trim(), p = pass.value;
+  if (!e || p.length < 6) { m.textContent = "Enter your email and a password of at least 6 characters."; m.className = "msg err"; return; }
+  btn.disabled = true; m.textContent = "Please wait..."; m.className = "msg";
+  try {
+   if (login) {
+    saveSession(await authCall("/token?grant_type=password", { email: e, password: p }));
+    closeModal(); openSide();
+   } else {
+    const d = await authCall("/signup", { email: e, password: p });
+    if (d.access_token) { saveSession(d); closeModal(); openSide(); }
+    else { authMode = "login"; paintModal("Account created. Check your email to confirm it, then log in.", "ok"); }
+   }
+  } catch (err) { m.textContent = err.message; m.className = "msg err"; btn.disabled = false; }
+ };
+
+ box.append(x, el("h3",null,"Welcome to KaziHub"), tabs, el("label",null,"Email"), email, el("label",null,"Password"), pass, m, btn);
+ modal.appendChild(box);
+}
+
+async function logout() {
+ try { await authCall("/logout", {}, session.access_token); } catch(e) {}
+ saveSession(null);
+ paintSidebar();
+}
+
+async function restoreSession() {
+ if (!session) return;
+ const now = Math.floor(Date.now()/1000);
+ if (session.expires_at && session.expires_at - 60 < now) {
+  try { saveSession(await authCall("/token?grant_type=refresh_token", { refresh_token: session.refresh_token })); }
+  catch(e) { saveSession(null); }
+ }
+ paintSidebar();
+}
+
+paintSidebar();
+restoreSession();
 </script>
 </body>
-  </html>
+ </html>
