@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111827">
+<meta name="description" content="Jobs, internships and graduate programmes across Kenya, sorted by what closes first.">
+<title>KaziHub Kenya | Jobs sorted by deadline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#111827;--y:#ffc700;--ysoft:#fff6cc;--bg:#f6f7f9;--line:#e5e7eb;--muted:#6b7280;--blue:#e6efff;--blueink:#2457c5}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'DM Sans',system-ui,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.55}
+h1,h2,h3{font-family:Poppins,'DM Sans',sans-serif;margin:0;line-height:1.2}
+a{color:inherit}button,input,select{font:inherit}button{cursor:pointer}
+:focus-visible{outline:3px solid var(--y);outline-offset:2px}
+.wrap{width:min(1160px,92%);margin:auto}
+header{position:sticky;top:0;z-index:20;background:var(--ink);color:#fff}
+.nav{height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.logo{font:700 26px Poppins,sans-serif;letter-spacing:-.5px;text-decoration:none;color:#fff}
+.logo b{color:var(--y)}
+.links{display:flex;align-items:center;gap:24px}
+.links a{text-decoration:none;font-size:14px;font-weight:500;color:#e5e7eb}
+.links a:hover{color:var(--y)}
+.links .cta{background:var(--y);color:var(--ink);padding:9px 18px;border-radius:99px;font-weight:700}
+.links .cta:hover{background:#ffd633;color:var(--ink)}
+.hero{background:var(--ysoft);padding:56px 0 64px}
+.hgrid{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center}
+h1{font-size:clamp(32px,5vw,54px);font-weight:700;letter-spacing:-1.5px}
+.lead{color:#4b5563;max-width:500px;margin:16px 0 0;font-size:17px}
+.search{display:grid;grid-template-columns:1.4fr 1fr auto;gap:6px;background:#fff;border-radius:16px;padding:8px;margin-top:26px;box-shadow:0 10px 30px #11182714}
+.search input,.search select{min-width:0;width:100%;border:0;outline:0;background:none;color:var(--ink);padding:14px 12px;border-radius:10px}
+.search select{border-left:1px solid var(--line);border-radius:0}
+.search button{border:0;border-radius:11px;background:var(--ink);color:#fff;font-weight:700;padding:0 26px}
+.search button:hover{background:#000}
+.quick{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.quick button{background:#fff;border:1px solid #f0e3a0;border-radius:99px;padding:7px 15px;font-size:13px;font-weight:500}
+.quick button:hover{background:var(--y);border-color:var(--y)}
+.trust{margin:18px 0 0;color:#4b5563;font-size:14px}
+.phone{width:min(360px,100%);margin:auto;background:var(--ink);border-radius:36px;padding:10px;box-shadow:0 30px 60px #11182733}
+.screen{background:var(--bg);border-radius:28px;padding:18px 14px 6px;min-height:380px}
+.screen h2{font-size:18px;margin:0 4px 14px;display:flex;justify-content:space-between;align-items:baseline}
+.screen h2 small{font:400 12px 'DM Sans',sans-serif;color:var(--muted)}
+.pc{display:block;background:#fff;border-radius:16px;padding:14px;margin-bottom:12px;text-decoration:none;animation:in .5s both}
+.pc:hover{box-shadow:0 6px 18px #11182718}
+.t{display:flex;gap:12px;align-items:center}
+.lg{width:44px;height:44px;border-radius:11px;display:grid;place-items:center;color:#fff;font:700 15px Poppins,sans-serif;flex-shrink:0}
+.pc strong{display:block;font-size:15px;line-height:1.3}
+.pc small{color:var(--muted)}
+@keyframes in{from{opacity:0;transform:translateY(10px)}}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 0}
+.tag{background:var(--blue);color:var(--blueink);font-size:12px;font-weight:500;padding:4px 10px;border-radius:7px}
+.tag.alt{background:#f3f4f6;color:#374151}
+.rem{font-size:13px;color:var(--muted);margin-top:10px}
+.rem.urgent{color:#dc2626;font-weight:700}.rem.soon{color:#b45309;font-weight:700}.rem.ok{color:#15803d;font-weight:500}
+section.s{padding:56px 0}
+.head{margin-bottom:24px}
+.head h2{font-size:clamp(24px,4vw,32px);letter-spacing:-.5px}
+.head p{margin:8px 0 0;color:var(--muted)}
+.cats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.cat{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;text-decoration:none}
+.cat:hover{border-color:var(--y);box-shadow:0 0 0 3px var(--ysoft)}
+.cat i{width:44px;height:44px;border-radius:50%;background:var(--ysoft);display:grid;place-items:center;font-style:normal;font-size:22px;flex-shrink:0}
+.cat strong{display:block;font-size:15px;line-height:1.3}
+.cat small{color:var(--muted);font-size:12px;line-height:1.4;display:block}
+.filters{display:flex;gap:10px;flex-wrap:wrap}
+.filters input,.filters select{padding:13px;border:1px solid var(--line);border-radius:12px;background:#fff;min-width:0}
+.filters input{flex:1;min-width:200px}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.pill{border:1px solid var(--line);background:#fff;border-radius:99px;padding:8px 16px;font-size:13px;font-weight:500;color:#374151}
+.pill.on{background:var(--ink);border-color:var(--ink);color:#fff}
+#count{color:var(--muted);font-size:14px;margin:0 0 14px}
+.list{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.job{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px}
+.job:hover{box-shadow:0 10px 30px #11182714}
+.jt{display:flex;gap:14px;align-items:center}
+.jt h3{font-size:17px}
+.co{color:var(--muted);font-size:14px}
+.save{margin-left:auto;flex-shrink:0;width:36px;height:36px;border:1px solid var(--line);background:#fff;border-radius:50%;font-size:16px}
+.save.on{background:#fde5e2;border-color:#f6b8b1}
+.job p{margin:12px 0 0;color:#4b5563;font-size:14px}
+.jf{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.jf .rem{margin:0}
+.apply{background:var(--y);color:var(--ink);text-decoration:none;padding:10px 18px;border-radius:99px;font-size:13px;font-weight:700;white-space:nowrap}
+.apply:hover{background:#ffd633}
+.src{display:block;color:var(--muted);font-size:12px;margin-top:10px}
+.empty{grid-column:1/-1;background:#fff;border:1px dashed #cbd5e1;border-radius:16px;padding:34px;text-align:center;color:var(--muted)}
+.note{margin-top:22px;background:#fff;border-left:5px solid var(--y);border-radius:8px 14px 14px 8px;padding:14px 16px;color:#4b5563;font-size:13px}
+.promos{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.promo{border-radius:20px;padding:30px;background:var(--y)}
+.promo:nth-child(2){background:var(--ink);color:#fff}
+.promo h3{font-size:24px}
+.promo p{margin:10px 0 16px;max-width:380px}
+.promo a{display:inline-block;background:var(--ink);color:#fff;padding:10px 18px;border-radius:99px;font-weight:700;font-size:13px;text-decoration:none}
+.promo:nth-child(2) a{background:var(--y);color:var(--ink)}
+.portals{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.portal{display:flex;align-items:center;gap:12px;padding:14px;background:#fff;border:1px solid var(--line);border-radius:16px;text-decoration:none}
+.portal:hover{border-color:var(--y)}
+.portal em{font:700 13px Poppins,sans-serif;font-style:normal;width:42px;height:42px;display:grid;place-items:center;background:var(--ysoft);border-radius:11px;flex-shrink:0}
+.portal strong{display:block;font-size:15px}.portal small{color:var(--muted)}
+.alt-bg{background:#fff;border-block:1px solid var(--line)}
+.tips{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.tip{border-top:4px solid var(--y);padding-top:14px}
+.tip h3{font-size:19px;margin-bottom:8px}
+.tip p{margin:0 0 10px;color:var(--muted);font-size:14px}
+.tip a{font-weight:700;font-size:14px}
+footer{background:var(--ink);color:#fff;padding:44px 0 22px}
+.fg{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:30px}
+footer p,footer a{color:#d1d5db;font-size:14px}
+footer h4{margin:0 0 10px}
+footer a{display:block;text-decoration:none;margin:8px 0}
+footer a:hover{color:var(--y)}
+footer a.logo{display:inline-block;color:#fff;margin:0 0 8px}
+.copy{border-top:1px solid #ffffff1f;margin-top:28px;padding-top:16px;color:#9ca3af;font-size:12px}
+.bn{padding:28px 0 0}
+.track{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;border-radius:22px}
+.track::-webkit-scrollbar{display:none}
+.slide{position:relative;flex:0 0 100%;scroll-snap-align:start;min-height:260px;border-radius:22px;padding:36px;color:#fff;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+.slide:before{content:"";position:absolute;width:320px;height:320px;border-radius:50%;background:#ffc70026;right:-60px;bottom:-120px}
+.slide h3{font-size:clamp(24px,4vw,38px);max-width:480px;letter-spacing:-.5px;position:relative}
+.slide p{max-width:440px;color:#e5e7eb;margin:10px 0 18px;position:relative}
+.slide a{align-self:flex-start;background:var(--y);color:var(--ink);padding:11px 22px;border-radius:99px;font-weight:700;text-decoration:none;position:relative}
+.slide .art{position:absolute;right:5%;top:50%;transform:translateY(-50%);font-size:clamp(90px,16vw,170px)}
+.dots{display:flex;justify-content:center;gap:8px;margin-top:14px}
+.dots button{width:9px;height:9px;border-radius:9px;border:0;background:#cbd5e1;padding:0}
+.dots button.on{background:var(--ink);width:26px}
+.poster{position:relative;height:150px;border-radius:12px;overflow:hidden;margin-bottom:16px;display:flex;align-items:flex-end;padding:12px;color:#fff}
+.poster img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top}
+.pe{position:absolute;right:14px;top:8px;font-size:60px}
+.pco{position:relative;font:600 13px Poppins,sans-serif;background:#00000066;padding:4px 12px;border-radius:99px}
+@media(max-width:820px){
+ .links a:not(.cta){display:none}
+ .hgrid,.promos,.tips{grid-template-columns:1fr}
+ .hero{padding:40px 0 48px}
+ .search{grid-template-columns:1fr}
+ .search select{border-left:0;border-top:1px solid var(--line)}
+ .search button{padding:14px}
+ .cats{grid-template-columns:1fr 1fr}
+ .list,.portals{grid-template-columns:1fr}
+ .fg{grid-template-columns:1fr 1fr}.fg>div:first-child{grid-column:1/-1}
+ section.s{padding:40px 0}
+ .slide{padding:26px;min-height:230px}
+ .slide .art{opacity:.25}
+}
+@media(max-width:420px){.cats{grid-template-columns:1fr}.jf{flex-direction:column;align-items:start}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<header>
+ <div class="wrap nav">
+  <a class="logo" href="#">Kazi<b>Hub</b></a>
+  <nav class="links">
+   <a href="#jobs">Jobs</a>
+   <a href="#categories">Categories</a>
+   <a href="#portals">Job portals</a>
+   <a href="#jobs" class="cta">Browse jobs</a>
+  </nav>
+ </div>
+</header>
+
+<section class="hero">
+ <div class="wrap hgrid">
+  <div>
+   <h1>Find your next job in Kenya.</h1>
+   <p class="lead">Jobs, internships, attachments and graduate programmes from across Kenya, each checked against the original advert.</p>
+   <form class="search" id="heroSearch">
+    <input id="keyword" placeholder="Job title, skill or company" aria-label="Job title, skill or company">
+    <select id="heroCounty" aria-label="County">
+     <option value="">All counties</option>
+    </select>
+    <button type="submit">Search jobs</button>
+   </form>
+   <div class="quick">
+    <button data-pick="Internship">Internships</button>
+    <button data-pick="Graduate">Graduate</button>
+    <button data-pick="Government">Government</button>
+    <button data-pick="Technology">Technology</button>
+   </div>
+   <p class="trust"><b id="statJobs">0</b> open listings across all 47 counties. Free for every job seeker.</p>
+  </div>
+  <aside class="phone" aria-label="Closing soon">
+   <div class="screen">
+    <h2>Closing soon <small id="today"></small></h2>
+    <div id="board"></div>
+   </div>
+  </aside>
+ </div>
+</section>
+
+<section class="bn">
+ <div class="wrap">
+  <div class="track" id="track"></div>
+  <div class="dots" id="dots"></div>
+ </div>
+</section>
+
+<section class="s" id="categories">
+ <div class="wrap">
+  <div class="head"><h2>Browse by category</h2><p>Pick a field to filter the listings.</p></div>
+  <div class="cats">
+   <a class="cat" href="#jobs" data-pick="Government"><i>🏛️</i><div><strong>Government</strong><small>Public service and county jobs</small></div></a>
+   <a class="cat" href="#jobs" data-pick="Internship"><i>🎓</i><div><strong>Internships</strong><small>Attachments and placements</small></div></a>
+   <a class="cat" href="#jobs" data-pick="Graduate"><i>🚀</i><div><strong>Graduate jobs</strong><small>Trainee and entry-level roles</small></div></a>
+   <a class="cat" href="#jobs" data-pick="NGO"><i>🤝</i><div><strong>NGOs and development</strong><small>Non-profit and humanitarian</small></div></a>
+   <a class="cat" href="#jobs" data-pick="Technology"><i>💻</i><div><strong>Technology and data</strong><small>ICT, software and analytics</small></div></a>
+   <a class="cat" href="#jobs" data-pick="Finance"><i>📊</i><div><strong>Finance and insurance</strong><small>Accounting, banking, actuarial</small></div></a>
+   <a class="cat" href="#jobs" data-pick="Healthcare"><i>🩺</i><div><strong>Healthcare</strong><small>Medical and health services</small></div></a>
+   <a class="cat" href="#jobs" data-pick="Engineering"><i>⚙️</i><div><strong>Engineering and trades</strong><small>Technical, construction, energy</small></div></a>
+  </div>
+ </div>
+</section>
+
+<section class="s" id="jobs" style="padding-top:8px">
+ <div class="wrap">
+  <div class="head"><h2>Open opportunities</h2><p>Sorted by closing date. Expired adverts are hidden automatically.</p></div>
+  <div class="filters">
+   <input id="jobSearch" placeholder="Search job, employer or keyword" aria-label="Search listings">
+   <select id="county" aria-label="Location">
+    <option value="">All locations</option>
+   </select>
+   <select id="jobType" aria-label="Job type">
+    <option value="">All job types</option>
+    <option>Internship</option><option>Graduate</option><option>Full-time</option>
+    <option>Government</option><option>NGO</option><option>Technology</option>
+    <option>Finance</option><option>Healthcare</option><option>Engineering</option>
+   </select>
+  </div>
+  <div class="pills">
+   <button class="pill on" data-filter="">All</button>
+   <button class="pill" data-filter="Internship">Internships</button>
+   <button class="pill" data-filter="Graduate">Graduate</button>
+   <button class="pill" data-filter="Full-time">Full-time</button>
+   <button class="pill" data-filter="Government">Government</button>
+   <button class="pill" data-filter="NGO">NGOs</button>
+   <button class="pill" data-filter="__saved">♥ Saved</button>
+  </div>
+  <p id="count" aria-live="polite"></p>
+  <div class="list" id="jobList"></div>
+  <div class="note"><strong>Job safety:</strong> KaziHub links to external employers and job sources. Read the original advert, confirm the deadline and check the employer. Never pay a recruiter for a promised job. A source link does not guarantee a vacancy is still open.</div>
+ </div>
+</section>
+
+<section class="s" style="padding-top:0">
+ <div class="wrap promos">
+  <div class="promo"><h3>Starting your career?</h3><p>Explore internships, entry-level jobs and graduate programmes to build your first experience.</p><a href="https://www.brightermonday.co.ke/jobs" target="_blank" rel="noopener noreferrer">Browse entry-level jobs</a></div>
+  <div class="promo"><h3>Get application-ready</h3><p>Improve your CV, practise interviews and make your next application count.</p><a href="https://www.fuzu.com/kenya" target="_blank" rel="noopener noreferrer">Open career tools</a></div>
+ </div>
+</section>
+
+<section class="s alt-bg" id="portals">
+ <div class="wrap">
+  <div class="head"><h2>More job portals</h2><p>These open external sites. Their vacancies are not imported here.</p></div>
+  <div class="portals">
+   <a class="portal" href="https://work.ke/jobs" target="_blank" rel="noopener noreferrer"><em>WK</em><div><strong>work.ke</strong><small>Jobs with source links</small></div></a>
+   <a class="portal" href="https://www.brightermonday.co.ke/jobs" target="_blank" rel="noopener noreferrer"><em>BM</em><div><strong>BrighterMonday</strong><small>Private-sector jobs</small></div></a>
+   <a class="portal" href="https://www.fuzu.com/kenya" target="_blank" rel="noopener noreferrer"><em>FZ</em><div><strong>Fuzu</strong><small>Jobs and career tools</small></div></a>
+   <a class="portal" href="https://www.myjobmag.co.ke/" target="_blank" rel="noopener noreferrer"><em>MJ</em><div><strong>MyJobMag Kenya</strong><small>Jobs by sector and county</small></div></a>
+   <a class="portal" href="https://www.psckjobs.go.ke/" target="_blank" rel="noopener noreferrer"><em>PSC</em><div><strong>Public Service Commission</strong><small>Government recruitment</small></div></a>
+   <a class="portal" href="https://www.gaa.go.ke/job-adverts" target="_blank" rel="noopener noreferrer"><em>GOV</em><div><strong>Government adverts</strong><small>Official public notices</small></div></a>
+   <a class="portal" href="https://www.neaims.go.ke/" target="_blank" rel="noopener noreferrer"><em>NEA</em><div><strong>NEAIMS</strong><small>Employment services</small></div></a>
+  </div>
+ </div>
+</section>
+
+<section class="s" id="resources">
+ <div class="wrap">
+  <div class="head"><h2>Build your career</h2><p>What to do once you have found a vacancy.</p></div>
+  <div class="tips">
+   <div class="tip"><h3>Improve your CV</h3><p>Tailor it to each role. Lead with the skills and experience the advert asks for.</p><a href="https://www.fuzu.com/kenya" target="_blank" rel="noopener noreferrer">Read CV guides</a></div>
+   <div class="tip"><h3>Prepare for interviews</h3><p>Practise explaining your strengths, your projects and how you solve problems.</p><a href="https://www.brightermonday.co.ke/job-seeker" target="_blank" rel="noopener noreferrer">Read interview advice</a></div>
+   <div class="tip"><h3>Avoid job scams</h3><p>Verify employer websites and recruitment notices. Be wary of any request for fees.</p><a href="https://www.psckjobs.go.ke/" target="_blank" rel="noopener noreferrer">Check official recruitment</a></div>
+  </div>
+ </div>
+</section>
+
+<footer>
+ <div class="wrap">
+  <div class="fg">
+   <div><a class="logo" href="#">Kazi<b>Hub</b></a><p>Your starting point for finding work across Kenya.</p></div>
+   <div><h4>Explore</h4><a href="#jobs">Find jobs</a><a href="#categories">Categories</a><a href="#portals">Job portals</a></div>
+   <div><h4>Visitors</h4><a href="#resources">Career help</a><a href="mailto:hello@kazihub.example">Contact KaziHub</a><p style="font-size:12px">Placeholder email: replace before launch.</p></div>
+  </div>
+  <div class="copy">© 2026 KaziHub Kenya. Independent job discovery platform. External sites belong to their publishers.</div>
+ </div>
+</footer>
+
+<script>
+// @ts-nocheck
+
+// ===== EDIT THESE TWO LINES (keep the quote marks) =====
+const SUPABASE_URL = "PASTE_PROJECT_URL_HERE";
+const SUPABASE_KEY = "PASTE_PUBLISHABLE_KEY_HERE";
+// ========================================================
+
+// Sample jobs. These show only if Supabase cannot be reached.
+let jobs = [
+ {title:"Finance & Business Advisory Internship",company:"KKCO East Africa",location:"Nairobi",category:"Internship",type:"Internship",deadline:"13 Oct 2026",checked:"8 Oct 2026",description:"Finance and business advisory opportunity. Check the original advert for qualifications and eligibility.",url:"https://kkcoeastafrica.zohorecruit.com/jobs/Careers/695323000003506001/Finance-Business-Advisory-Internship?source=CareerSite",source:"Employer application portal",image:""},
+ {title:"Supply Chain & Logistics Assistant",company:"Trócaire",location:"Nairobi",category:"Full-time",type:"Full-time",deadline:"20 Oct 2026",checked:"8 Oct 2026",description:"Supply chain and logistics role. Review the employer's advert for requirements before applying.",url:"https://jobs.workable.com/view/fXbqiEcYCETkusb8qr5aCq/supply-chain-%26-logistics-assistant-in-nairobi-at-tr%C3%B3caire",source:"Employer vacancy page",image:""},
+ {title:"Information Technology Assistant, G6",company:"United Nations Office at Nairobi",location:"Nairobi",category:"Full-time",type:"Full-time",deadline:"5 Nov 2026",checked:"7 Oct 2026",description:"IT support vacancy. Check the official UN advert for experience and qualification requirements.",url:"https://careers.un.org/jobSearchDescription/282213?language=en",source:"Official UN careers",image:""}
+];
+
+let activeCategory = "";
+const $ = id => document.getElementById(id);
+const el = (t,c,x) => { const n=document.createElement(t); if(c) n.className=c; if(x!=null) n.textContent=x; return n; };
+
+// All 47 counties, plus Remote, fill both location dropdowns.
+const COUNTIES = ["Baringo","Bomet","Bungoma","Busia","Elgeyo-Marakwet","Embu","Garissa","Homa Bay","Isiolo","Kajiado","Kakamega","Kericho","Kiambu","Kilifi","Kirinyaga","Kisii","Kisumu","Kitui","Kwale","Laikipia","Lamu","Machakos","Makueni","Mandera","Marsabit","Meru","Migori","Mombasa","Murang'a","Nairobi","Nakuru","Nandi","Narok","Nyamira","Nyandarua","Nyeri","Samburu","Siaya","Taita-Taveta","Tana River","Tharaka-Nithi","Trans Nzoia","Turkana","Uasin Gishu","Vihiga","Wajir","West Pokot"];
+
+["heroCounty","county"].forEach(id => {
+ ["Remote", ...COUNTIES].forEach(c => {
+  const o = document.createElement("option");
+  o.textContent = c;
+  $(id).appendChild(o);
+ });
+});
+
+const today = new Date(); today.setHours(0,0,0,0);
+const daysLeft = j => Math.ceil((new Date(j.deadline) - today) / 864e5);
+const urgency = d => d <= 3 ? "urgent" : d <= 10 ? "soon" : "ok";
+const remText = d => d === 0 ? "Closes today" : d === 1 ? "1 day remaining" : d + " days remaining";
+
+const COLORS = ["#2563eb","#7c3aed","#059669","#db2777","#ea580c","#0891b2"];
+const logo = name => {
+ const l = el("div","lg", name.split(/\s+/).filter(w => /\w/.test(w[0])).map(w => w[0]).join("").slice(0,2).toUpperCase());
+ l.style.background = COLORS[[...name].reduce((s,c) => s + c.charCodeAt(0), 0) % COLORS.length];
+ return l;
+};
+
+const EMOJI = {Internship:"🎓",Graduate:"🚀","Full-time":"💼",Government:"🏛️",NGO:"🤝",Technology:"💻",Finance:"📊",Healthcare:"🩺",Engineering:"⚙️"};
+
+// Poster on every job card. A poster_url in the database shows the real flyer.
+function poster(j) {
+ const p = el("div","poster");
+ p.style.background = "linear-gradient(135deg," + COLORS[[...j.company].reduce((s,x) => s + x.charCodeAt(0), 0) % COLORS.length] + ",#111827)";
+ p.append(el("span","pe",EMOJI[j.category] || "💼"), el("span","pco",j.company));
+ if (j.image) {
+  const im = el("img");
+  im.src = j.image; im.alt = j.title + " poster"; im.loading = "lazy";
+  im.onerror = () => im.remove();
+  p.appendChild(im);
+ }
+ return p;
+}
+
+// Banner posters at the top. Add image:"https://..." to use your own picture.
+const posters = [
+ {title:"Internships and attachments",text:"Start building experience before you graduate.",button:"See internships",cat:"Internship",art:"🎓",bg:"linear-gradient(120deg,#111827,#1e3a8a)",image:""},
+ {title:"Government jobs in one place",text:"Public service and county vacancies, linked to the official adverts.",button:"See government jobs",cat:"Government",art:"🏛️",bg:"linear-gradient(120deg,#111827,#065f46)",image:""},
+ {title:"Graduate trainee programmes",text:"Entry-level roles for fresh graduates across Kenya.",button:"See graduate roles",cat:"Graduate",art:"🚀",bg:"linear-gradient(120deg,#111827,#6d28d9)",image:""},
+ {title:"Never pay for a job",text:"Real employers do not ask for fees. Learn how to spot a scam.",button:"Read the safety tips",href:"#resources",art:"🛡️",bg:"linear-gradient(120deg,#111827,#b45309)",image:""}
+];
+
+let cur = 0, paused = false;
+function go(i) {
+ const t = $("track");
+ cur = i;
+ t.scrollTo({left: t.children[i].offsetLeft - t.offsetLeft, behavior:"smooth"});
+}
+
+function renderPosters() {
+ const track = $("track"), dots = $("dots");
+ posters.forEach((p,i) => {
+  const s = el("div","slide");
+  s.style.background = p.image ? "linear-gradient(90deg,#111827ee,#11182750),url('" + p.image + "') center/cover" : p.bg;
+  if (!p.image) s.appendChild(el("div","art",p.art));
+  const a = el("a",null,p.button);
+  a.href = p.href || "#jobs";
+  if (p.cat) a.onclick = () => { $("jobSearch").value = ""; setCategory(p.cat); };
+  s.append(el("h3",null,p.title), el("p",null,p.text), a);
+  track.appendChild(s);
+  const d = el("button");
+  d.setAttribute("aria-label","Show poster " + (i+1));
+  d.onclick = () => go(i);
+  dots.appendChild(d);
+ });
+ dots.children[0].classList.add("on");
+ track.addEventListener("scroll", () => {
+  cur = Math.round(track.scrollLeft / (track.children[0].offsetWidth + 16));
+  [...dots.children].forEach((d,k) => d.classList.toggle("on", k === cur));
+ });
+ track.addEventListener("pointerenter", () => paused = true);
+ track.addEventListener("pointerleave", () => paused = false);
+ if (!matchMedia("(prefers-reduced-motion:reduce)").matches)
+  setInterval(() => { if (!paused) go((cur + 1) % posters.length); }, 5000);
+}
+
+// ===== Supabase connection =====
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const pretty = d => d ? (+d.slice(8,10)) + " " + MONTHS[+d.slice(5,7) - 1] + " " + d.slice(0,4) : "";
+
+// Turns one database row into the shape the page uses.
+const mapJob = r => ({
+ title: r.title,
+ company: r.company,
+ location: r.county || r.location,
+ category: r.category,
+ type: r.job_type || r.category,
+ deadline: pretty(r.deadline),
+ checked: pretty(r.verified_at) || "recently",
+ description: r.description || "",
+ url: r.application_url,
+ source: r.source_name || "Original advert",
+ image: r.poster_url || ""
+});
+
+async function fetchJobs() {
+ const res = await fetch(SUPABASE_URL + "/rest/v1/jobs?select=*&published=eq.true&order=deadline.asc", {
+  headers: { apikey: SUPABASE_KEY }
+ });
+ if (!res.ok) throw new Error("Supabase returned " + res.status);
+ return (await res.json()).map(mapJob);
+}
+
+let saved = [];
+try { saved = JSON.parse(localStorage.getItem("kh_saved") || "[]"); } catch(e) {}
+const persist = () => { try { localStorage.setItem("kh_saved", JSON.stringify(saved)); } catch(e) {} };
+
+const open = () => jobs.filter(j => daysLeft(j) >= 0).sort((a,b) => daysLeft(a) - daysLeft(b));
+
+function renderBoard() {
+ const b = $("board"); b.innerHTML = "";
+ const top = open().slice(0,3);
+ $("today").textContent = today.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
+ $("statJobs").textContent = open().length;
+ if (!top.length) { b.appendChild(el("p","co","No open listings right now. Check the job portals below.")); return; }
+ top.forEach((j,i) => {
+  const a = el("a","pc"); a.href = "#jobs"; a.style.animationDelay = (i*90)+"ms";
+  const t = el("div","t"), h = el("div");
+  h.append(el("strong",null,j.title), el("small",null,j.company));
+  t.append(logo(j.company), h);
+  const tg = el("div","tags");
+  tg.append(el("span","tag",j.location), el("span","tag alt",j.type));
+  const d = daysLeft(j);
+  a.append(t, tg, el("div","rem " + urgency(d), remText(d)));
+  b.appendChild(a);
+ });
+}
+
+function renderJobs() {
+ const q = $("jobSearch").value.trim().toLowerCase();
+ const loc = $("county").value.toLowerCase();
+ const type = $("jobType").value.toLowerCase();
+ const list = $("jobList"); list.innerHTML = "";
+
+ const matches = open().filter(j => {
+  const text = [j.title,j.company,j.location,j.category,j.type,j.description].join(" ").toLowerCase();
+  const cat = !activeCategory ||
+   (activeCategory === "__saved" ? saved.includes(j.url) :
+    j.category.toLowerCase() === activeCategory.toLowerCase() || j.type.toLowerCase() === activeCategory.toLowerCase());
+  return text.includes(q) && (!loc || j.location.toLowerCase().includes(loc)) &&
+   (!type || j.category.toLowerCase() === type || j.type.toLowerCase() === type) && cat;
+ });
+
+ $("count").textContent = matches.length + " listing" + (matches.length === 1 ? "" : "s") + " shown. Job portals below have more vacancies.";
+
+ if (!matches.length) {
+  const e = el("div","empty");
+  e.append(el("strong",null,"No matching vacancies yet"), el("p",null,"Clear a filter or browse the job portals below."));
+  list.appendChild(e); return;
+ }
+
+ matches.forEach(j => {
+  const d = daysLeft(j);
+  const card = el("article","job");
+
+  const jt = el("div","jt");
+  const head = el("div"); head.append(el("h3",null,j.title), el("div","co",j.company));
+  const isSaved = saved.includes(j.url);
+  const save = el("button","save" + (isSaved ? " on" : ""), isSaved ? "♥" : "♡");
+  save.setAttribute("aria-label","Save " + j.title);
+  save.onclick = () => {
+   saved = saved.includes(j.url) ? saved.filter(x => x !== j.url) : [...saved, j.url];
+   persist(); renderJobs();
+  };
+  jt.append(logo(j.company), head, save);
+
+  const tags = el("div","tags");
+  tags.append(el("span","tag",j.location), el("span","tag alt",j.category));
+
+  const foot = el("div","jf");
+  const apply = el("a","apply","View advert and apply");
+  apply.href = j.url; apply.target = "_blank"; apply.rel = "noopener noreferrer";
+  foot.append(el("div","rem " + urgency(d), remText(d) + ", closes " + j.deadline), apply);
+
+  const src = el("small","src","Source: " + j.source + ". Last checked " + j.checked + ".");
+  card.append(poster(j), jt, tags, el("p",null,j.description), foot, src);
+  list.appendChild(card);
+ });
+}
+
+function setCategory(c) {
+ activeCategory = c;
+ document.querySelectorAll("[data-filter]").forEach(b => b.classList.toggle("on", b.dataset.filter === c));
+ $("jobType").value = "";
+ renderJobs();
+}
+
+["input","change"].forEach(ev => {
+ $("jobSearch").addEventListener(ev, renderJobs);
+ $("county").addEventListener(ev, renderJobs);
+ $("jobType").addEventListener(ev, renderJobs);
+});
+
+$("heroSearch").addEventListener("submit", e => {
+ e.preventDefault();
+ $("jobSearch").value = $("keyword").value;
+ $("county").value = $("heroCounty").value;
+ renderJobs();
+ $("jobs").scrollIntoView({behavior:"smooth"});
+});
+
+document.querySelectorAll("[data-filter]").forEach(b => b.addEventListener("click", () => setCategory(b.dataset.filter)));
+document.querySelectorAll("[data-pick]").forEach(t => t.addEventListener("click", () => {
+ $("jobSearch").value = "";
+ setCategory(t.dataset.pick);
+ if (t.tagName === "BUTTON") $("jobs").scrollIntoView({behavior:"smooth"});
+}));
+
+async function loadJobs() {
+ try {
+  jobs = await fetchJobs();
+ } catch (err) {
+  console.error("Could not load jobs from Supabase:", err);
+ }
+ renderPosters();
+ renderBoard();
+ renderJobs();
+}
+loadJobs();
+</script>
+</body>
+  </html>
