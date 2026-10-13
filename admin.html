@@ -1,1 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>KaziHub Admin</title>
+<style>
+:root{--ink:#111827;--y:#ffc700;--ysoft:#fff6cc;--bg:#f6f7f9;--line:#e5e7eb;--muted:#6b7280}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+header{background:var(--ink);padding:16px 4%}
+.logo{color:#fff;font:700 22px system-ui,sans-serif;text-decoration:none}
+.logo b{color:var(--y)}
+.logo small{font-size:12px;color:#9ca3af;margin-left:8px;font-weight:500}
+.wrap{width:min(900px,92%);margin:24px auto 60px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:20px}
+h2{margin:0 0 14px;font-size:20px}
+label{display:block;font-size:13px;font-weight:700;margin:12px 0 6px}
+input,select,textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff}
+textarea{min-height:90px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chk{display:flex;align-items:center;gap:8px;margin-top:14px;font-weight:700}
+.chk input{width:auto}
+button{font:inherit;cursor:pointer}
+.btn{border:0;border-radius:99px;padding:12px 20px;font-weight:700;background:var(--y);color:var(--ink);margin-top:16px}
+.btn.dark{background:var(--ink);color:#fff}
+.btn.red{background:#fee2e2;color:#b91c1c}
+.btn.sm{padding:8px 14px;font-size:13px;margin:0}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 0;border-top:1px solid var(--line)}
+.row small{color:var(--muted)}
+.acts{display:flex;gap:8px;flex-shrink:0}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:#dcfce7;color:#166534;margin-left:8px}
+.badge.off{background:#f3f4f6;color:#4b5563}
+.msg{font-size:14px;margin:12px 0 0}
+.msg.ok{color:#15803d}.msg.err{color:#dc2626}
+@media(max-width:560px){.two{grid-template-columns:1fr}.row{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+<header><a class="logo" href="./">Kazi<b>Hub</b><small>Admin</small></a></header>
+<main class="wrap" id="app"></main>
 
+<script>
+// @ts-nocheck
+const SUPABASE_URL = "https://dqjottoyunlzihqwznnl.supabase.co";
+const SUPABASE_KEY = "sb_publishable_Mhr1ZXW0JzxS-n0lfSOUsA_ASRLeC7j";
+
+const $ = id => document.getElementById(id);
+const el = (t,c,x) => { const n=document.createElement(t); if(c) n.className=c; if(x!=null) n.textContent=x; return n; };
+
+const COUNTIES = ["Remote","Baringo","Bomet","Bungoma","Busia","Elgeyo-Marakwet","Embu","Garissa","Homa Bay","Isiolo","Kajiado","Kakamega","Kericho","Kiambu","Kilifi","Kirinyaga","Kisii","Kisumu","Kitui","Kwale","Laikipia","Lamu","Machakos","Makueni","Mandera","Marsabit","Meru","Migori","Mombasa","Murang'a","Nairobi","Nakuru","Nandi","Narok","Nyamira","Nyandarua","Nyeri","Samburu","Siaya","Taita-Taveta","Tana River","Tharaka-Nithi","Trans Nzoia","Turkana","Uasin Gishu","Vihiga","Wajir","West Pokot"];
+const CATS = ["Internship","Graduate","Full-time","Government","NGO","Technology","Finance","Healthcare","Engineering"];
+const TYPES = ["Full-time","Internship","Contract","Part-time","Remote"];
+const opts = a => a.map(x => "<option>" + x + "</option>").join("");
+
+// Uses the login saved by the main KaziHub site (same browser).
+let session = null;
+try { session = JSON.parse(localStorage.getItem("kh_session") || "null"); } catch(e) {}
+
+async function token() {
+ if (!session) throw new Error("Please log in on the main site first.");
+ const now = Math.floor(Date.now()/1000);
+ if (session.expires_at && session.expires_at - 60 < now) {
+  const r = await fetch(SUPABASE_URL + "/auth/v1/token?grant_type=refresh_token", {
+   method: "POST",
+   headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY },
+   body: JSON.stringify({ refresh_token: session.refresh_token })
+  });
+  if (!r.ok) throw new Error("Your login expired. Log in again on the main site.");
+  const s = await r.json();
+  s.expires_at = Math.floor(Date.now()/1000) + s.expires_in;
+  session = s;
+  try { localStorage.setItem("kh_session", JSON.stringify(s)); } catch(e) {}
+ }
+ return session.access_token;
+}
+
+async function api(path, method = "GET", body) {
+ const res = await fetch(SUPABASE_URL + "/rest/v1/" + path, {
+  method,
+  headers: {
+   apikey: SUPABASE_KEY,
+   Authorization: "Bearer " + await token(),
+   "Content-Type": "application/json",
+   Prefer: "return=representation"
+  },
+  body: body ? JSON.stringify(body) : undefined
+ });
+ if (!res.ok) {
+  let m = "Error " + res.status;
+  try { const j = await res.json(); m = j.message || m; } catch(e) {}
+  throw new Error(m);
+ }
+ return res.status === 204 ? null : res.json();
+}
+
+function note(text) {
+ const d = el("div","card");
+ d.append(el("p",null,text));
+ const a = el("a",null,"Go to KaziHub");
+ a.href = "./";
+ d.append(a);
+ $("app").append(d);
+}
+
+function buildForm() {
+ const card = el("div","card");
+ card.innerHTML =
+  '<h2>Add a job</h2><form id="jobForm">' +
+  '<label>Job title</label><input id="fTitle" required>' +
+  '<label>Company</label><input id="fCompany" required>' +
+  '<div class="two"><div><label>County</label><select id="fCounty">' + opts(COUNTIES) + '</select></div>' +
+  '<div><label>Closing date</label><input id="fDeadline" type="date" required></div></div>' +
+  '<div class="two"><div><label>Category</label><select id="fCategory">' + opts(CATS) + '</select></div>' +
+  '<div><label>Job type</label><select id="fType">' + opts(TYPES) + '</select></div></div>' +
+  '<label>Link to the original advert</label><input id="fUrl" type="url" placeholder="https://..." required>' +
+  '<label>Where you found it (optional)</label><input id="fSource" placeholder="Employer website">' +
+  '<label>Short description (optional)</label><textarea id="fDesc"></textarea>' +
+  '<label>Poster image link (optional)</label><input id="fPoster" type="url" placeholder="https://...jpg">' +
+  '<label class="chk"><input type="checkbox" id="fPub" checked> Publish straight away</label>' +
+  '<button class="btn" type="submit">Add job</button><p class="msg" id="fMsg"></p></form>';
+ $("app").append(card);
+
+ $("jobForm").onsubmit = async e => {
+  e.preventDefault();
+  const m = $("fMsg"), loc = $("fCounty").value;
+  m.className = "msg"; m.textContent = "Saving...";
+  const row = {
+   title: $("fTitle").value.trim(),
+   company: $("fCompany").value.trim(),
+   location: loc,
+   county: loc === "Remote" ? null : loc,
+   category: $("fCategory").value,
+   job_type: $("fType").value,
+   description: $("fDesc").value.trim() || null,
+   deadline: $("fDeadline").value || null,
+   application_url: $("fUrl").value.trim(),
+   source_name: $("fSource").value.trim() || null,
+   poster_url: $("fPoster").value.trim() || null,
+   verified_at: new Date().toISOString().slice(0,10),
+   published: $("fPub").checked,
+   created_at: new Date().toISOString()
+  };
+  try {
+   await api("jobs", "POST", row);
+   $("jobForm").reset();
+   m.className = "msg ok"; m.textContent = "Job added.";
+   loadList();
+  } catch (err) { m.className = "msg err"; m.textContent = err.message; }
+ };
+
+ const list = el("div","card");
+ list.append(el("h2",null,"All jobs"), el("div"));
+ list.lastChild.id = "list";
+ $("app").append(list);
+}
+
+async function loadList() {
+ const box = $("list");
+ box.textContent = "Loading...";
+ try {
+  const rows = await api("jobs?select=id,title,company,location,deadline,published&order=created_at.desc");
+  box.textContent = "";
+  if (!rows.length) { box.textContent = "No jobs yet."; return; }
+  rows.forEach(r => {
+   const row = el("div","row");
+   const info = el("div");
+   const b = el("b",null,r.title);
+   b.append(el("span","badge" + (r.published ? "" : " off"), r.published ? "Live" : "Hidden"));
+   info.append(b, el("small",null, r.company + ", " + r.location + (r.deadline ? ", closes " + r.deadline : "")));
+   const acts = el("div","acts");
+   const t = el("button","btn sm dark", r.published ? "Hide" : "Publish");
+   t.onclick = async () => {
+    try { await api("jobs?id=eq." + r.id, "PATCH", { published: !r.published }); loadList(); }
+    catch (e) { alert(e.message); }
+   };
+   const d = el("button","btn sm red","Delete");
+   d.onclick = async () => {
+    if (!confirm("Delete this job for good?")) return;
+    try { await api("jobs?id=eq." + r.id, "DELETE"); loadList(); }
+    catch (e) { alert(e.message); }
+   };
+   acts.append(t, d);
+   row.append(info, acts);
+   box.append(row);
+  });
+ } catch (e) { box.textContent = "Could not load jobs: " + e.message; }
+}
+
+async function init() {
+ if (!session) { note("Please log in on the main KaziHub site first, then open this page again."); return; }
+ try {
+  const rows = await api("admins?select=user_id");
+  if (!rows.length) { note("This account is not an admin."); return; }
+ } catch (e) { note("Could not check your account: " + e.message); return; }
+ buildForm();
+ loadList();
+}
+init();
+</script>
+</body>
+</html>
