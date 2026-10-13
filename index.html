@@ -161,15 +161,6 @@ footer a.logo{display:inline-block;color:#fff;margin:0 0 8px}
 .msg{font-size:13px;margin:12px 0 0;min-height:18px}
 .msg.err{color:#dc2626}.msg.ok{color:#15803d}
 .mbox .btn{width:100%;margin-top:14px}
-
-/* ===== ADDED: Google login button styling ===== */
-.google-divider{display:flex;align-items:center;gap:12px;margin:20px 0 14px;color:#9ca3af;font-size:12px;font-weight:600}
-.google-divider::before,.google-divider::after{content:"";flex:1;height:1px;background:#e5e7eb}
-.google-login{width:100%;min-height:48px;display:flex;align-items:center;justify-content:center;gap:12px;margin-top:12px;padding:12px 16px;background:#fff;color:#303030;border:1px solid #dadce0;border-radius:12px;font-family:Arial,sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s,box-shadow .2s,transform .2s}
-.google-login:hover{background:#f8faff;box-shadow:0 3px 10px #00000014}
-.google-login:active{transform:scale(.98)}
-.google-login:disabled{opacity:.65;cursor:wait}
-
 @media(max-width:820px){
  .links a:not(.cta){display:none}
  .links{gap:0}
@@ -339,10 +330,10 @@ footer a.logo{display:inline-block;color:#fff;margin:0 0 8px}
 <script>
 // @ts-nocheck
 
-// ===== Your Supabase connection (publishable key is safe to be public) =====
+// ===== Your Supabase connection (the publishable key is safe to be public) =====
 const SUPABASE_URL = "https://dqjottoyunlzihqwznnl.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Mhr1ZXW0JzxS-n0lfSOUsA_ASRLeC7j";
-// ===========================================================================
+// ================================================================================
 
 // Sample jobs. These show only if Supabase cannot be reached.
 let jobs = [
@@ -464,7 +455,7 @@ async function fetchJobs() {
 
 let saved = [];
 try { saved = JSON.parse(localStorage.getItem("kh_saved") || "[]"); } catch(e) {}
-const persist = () => { try { localStorage.setItem("kh_saved", JSON.stringify(saved)); } catch(e) {} };
+const persist = () => { try { localStorage.setItem("kh_saved", JSON.stringify(saved)); } catch(e) {} pushSaved(); };
 
 const open = () => jobs.filter(j => daysLeft(j) >= 0).sort((a,b) => daysLeft(a) - daysLeft(b));
 
@@ -579,15 +570,17 @@ async function loadJobs() {
 }
 loadJobs();
 
-// ===== Accounts and sidebar =====
+// ===== Accounts, sidebar, Google login, saved-jobs sync and admin link =====
 const AUTH = SUPABASE_URL + "/auth/v1";
-let session = null, authMode = "login";
+let session = null, authMode = "login", synced = [], isAdmin = false;
 try { session = JSON.parse(localStorage.getItem("kh_session") || "null"); } catch(e) {}
 
 function saveSession(s) {
  if (s && !s.expires_at && s.expires_in) s.expires_at = Math.floor(Date.now()/1000) + s.expires_in;
  session = s;
  try { s ? localStorage.setItem("kh_session", JSON.stringify(s)) : localStorage.removeItem("kh_session"); } catch(e) {}
+ if (s && s.user) { pullSaved(); checkAdmin(); }
+ else { synced = []; isAdmin = false; }
 }
 
 async function authCall(path, body, token) {
@@ -643,6 +636,11 @@ function paintSidebar() {
  const sv = el("button",null,"♥ My saved jobs");
  sv.onclick = () => { closeSide(); setCategory("__saved"); $("jobs").scrollIntoView({behavior:"smooth"}); };
  menu.appendChild(sv);
+ if (isAdmin) {
+  const ad = el("a",null,"⚙ Admin");
+  ad.href = "admin.html";
+  menu.appendChild(ad);
+ }
  side.append(head, acct, menu);
 }
 
@@ -695,7 +693,15 @@ function paintModal(msg, kind) {
   } catch (err) { m.textContent = err.message; m.className = "msg err"; btn.disabled = false; }
  };
 
- box.append(x, el("h3",null,"Welcome to KaziHub"), tabs, el("label",null,"Email"), email, el("label",null,"Password"), pass, m, btn);
+ const or = el("p",null,"or");
+ or.style.cssText = "text-align:center;color:#6b7280;font-size:13px;margin:14px 0 0";
+ const g = el("button","btn line","Continue with Google");
+ g.onclick = () => {
+  location.href = SUPABASE_URL + "/auth/v1/authorize?provider=google&redirect_to=" +
+   encodeURIComponent(location.origin + location.pathname);
+ };
+
+ box.append(x, el("h3",null,"Welcome to KaziHub"), tabs, el("label",null,"Email"), email, el("label",null,"Password"), pass, m, btn, or, g);
  modal.appendChild(box);
 }
 
@@ -715,115 +721,76 @@ async function restoreSession() {
  paintSidebar();
 }
 
-paintSidebar();
-restoreSession();
-
-// =====================================================
-// GOOGLE LOGIN: ADDED CODE
-// =====================================================
-
-// Add the Google button after the original login/signup
-// modal is drawn. The original email login remains intact.
-const originalPaintModal = paintModal;
-
-paintModal = function(msg, kind) {
- originalPaintModal(msg, kind);
-
- const box = modal.querySelector(".mbox");
- if (!box || box.querySelector(".google-login")) return;
-
- const divider = el("div","google-divider","OR");
-
- const googleBtn = el("button","google-login");
- googleBtn.type = "button";
- googleBtn.setAttribute("aria-label","Continue with Google");
-
- googleBtn.innerHTML = `
-  <svg width="21" height="21" viewBox="0 0 48 48" aria-hidden="true">
-   <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 3.07 13.22l7.98 6.19C12.93 13.72 18.03 9.5 24 9.5z"/>
-   <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.74 7.18l7.73 6c4.5-4.15 7.05-10.26 7.05-17.65z"/>
-   <path fill="#FBBC05" d="M10.05 28.59A14.4 14.4 0 0 1 9.3 24c0-1.59.27-3.13.76-4.59l-7.98-6.19A23.86 23.86 0 0 0 0 24c0 3.86.92 7.51 2.54 10.78l7.51-6.19z"/>
-   <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.91-5.8l-7.73-6c-2.15 1.45-4.92 2.3-8.18 2.3-5.97 0-11.07-4.22-12.95-9.91l-7.51 6.19C6.51 42.62 14.62 48 24 48z"/>
-  </svg>
-  <span>Continue with Google</span>
- `;
-
- googleBtn.onclick = () => {
-  googleBtn.disabled = true;
-  googleBtn.querySelector("span").textContent = "Connecting to Google...";
-
-  // This URL must also be allowed in Supabase's URL Configuration.
-  const redirect = window.location.origin + window.location.pathname;
-
-  window.location.href =
-   AUTH + "/authorize?provider=google&redirect_to=" +
-   encodeURIComponent(redirect);
- };
-
- box.append(divider, googleBtn);
-};
-
-// Handle the redirect back from Google after successful login.
+// Runs when Google sends the person back to the site.
 async function handleOAuthReturn() {
- const hash = window.location.hash;
-
- if (!hash.includes("access_token") && !hash.includes("error_description")) {
-  return;
- }
-
- const params = new URLSearchParams(hash.slice(1));
-
- // Remove authentication tokens from the visible address bar.
- history.replaceState(null, "", window.location.pathname + window.location.search);
-
- const error = params.get("error_description");
-
- if (error) {
-  alert("Google sign-in failed: " + error);
-  return;
- }
-
- const token = params.get("access_token");
-
- if (!token) {
-  alert("Google sign-in failed. Please try again.");
-  return;
- }
-
+ const h = location.hash;
+ if (!h.includes("access_token") && !h.includes("error_description")) return;
+ const p = new URLSearchParams(h.slice(1));
+ history.replaceState(null, "", location.pathname + location.search);
+ if (p.get("error_description")) { alert(p.get("error_description")); return; }
  try {
-  const response = await fetch(AUTH + "/user", {
-   headers: {
-    apikey: SUPABASE_KEY,
-    Authorization: "Bearer " + token
-   }
-  });
-
-  if (!response.ok) {
-   throw new Error("Could not verify your Google account.");
-  }
-
-  const user = await response.json();
-
-  saveSession({
-   access_token: token,
-   refresh_token: params.get("refresh_token"),
-   expires_in: Number(params.get("expires_in")) || 3600,
-   token_type: "bearer",
-   user: user
-  });
-
-  paintSidebar();
+  const tok = p.get("access_token");
+  const res = await fetch(AUTH + "/user", { headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + tok } });
+  const user = await res.json();
+  saveSession({ access_token: tok, refresh_token: p.get("refresh_token"), expires_in: +p.get("expires_in") || 3600, token_type: "bearer", user });
   openSide();
-
- } catch (error) {
-  console.error("Google login error:", error);
-  alert("Login could not be completed. Please try again.");
- }
+ } catch (e) { console.error(e); }
 }
 
-handleOAuthReturn();
+// Saved jobs synced to the account.
+async function savedApi(path, opts = {}) {
+ const res = await fetch(SUPABASE_URL + "/rest/v1/" + path, {
+  ...opts,
+  headers: {
+   apikey: SUPABASE_KEY,
+   Authorization: "Bearer " + session.access_token,
+   "Content-Type": "application/json",
+   Prefer: "resolution=ignore-duplicates"
+  }
+ });
+ if (!res.ok) throw new Error("Saved jobs error " + res.status);
+ return res;
+}
 
-// ===== END OF GOOGLE LOGIN ADDITION =====
+async function pushSaved() {
+ if (!session || !session.user) return;
+ try {
+  const add = saved.filter(u => !synced.includes(u));
+  const del = synced.filter(u => !saved.includes(u));
+  if (add.length) await savedApi("saved_jobs", { method: "POST", body: JSON.stringify(add.map(u => ({ job_url: u }))) });
+  for (const u of del) await savedApi("saved_jobs?job_url=eq." + encodeURIComponent(u), { method: "DELETE" });
+  synced = [...saved];
+ } catch (e) { console.error(e); }
+}
+
+async function pullSaved() {
+ if (!session || !session.user) return;
+ try {
+  const rows = (await (await savedApi("saved_jobs?select=job_url")).json()).map(r => r.job_url);
+  synced = rows;
+  saved = [...new Set([...saved, ...rows])];
+  try { localStorage.setItem("kh_saved", JSON.stringify(saved)); } catch(e) {}
+  await pushSaved();
+  renderJobs();
+ } catch (e) { console.error(e); }
+}
+
+// Shows the Admin link only to accounts listed in the admins table.
+async function checkAdmin() {
+ if (!session || !session.user) { isAdmin = false; paintSidebar(); return; }
+ try {
+  const res = await fetch(SUPABASE_URL + "/rest/v1/admins?select=user_id", {
+   headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + session.access_token }
+  });
+  isAdmin = res.ok && (await res.json()).length > 0;
+ } catch (e) { isAdmin = false; }
+ paintSidebar();
+}
+
+paintSidebar();
+restoreSession();
+handleOAuthReturn();
+if (session && session.user) { pullSaved(); checkAdmin(); }
 </script>
 </body>
 </html>
